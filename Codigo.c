@@ -3,16 +3,25 @@
 #include <string.h>
 #include <windows.h>
 
-// Definindo a estrutura para uma tarefa
+// Cores para o terminal
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN "\033[36m"
+
+// Estrutura de uma tarefa
 typedef struct Tarefa {
     char descricao[100];
     int xp;
-    int tempoEstimado; // Tempo dedicado à tarefa em minutos
+    int tempoEstimado;
     int tempoReal;
-    struct Tarefa* proximo;  // Ponteiro para a próxima tarefa
+    struct Tarefa* proximo;
 } Tarefa;
 
-// Estruturas para fila de tarefas e lista de tarefas concluídas
+// Estruturas para a fila de tarefas e lista de concluídas
 typedef struct Fila {
     Tarefa* frente;
     Tarefa* traseira;
@@ -22,7 +31,7 @@ typedef struct ListaConcluidas {
     Tarefa* inicio;
 } ListaConcluidas;
 
-// Funções para manipulação da fila
+// Funções para manipulação das tarefas
 Fila* criarFila() {
     Fila* fila = (Fila*)malloc(sizeof(Fila));
     fila->frente = fila->traseira = NULL;
@@ -39,16 +48,16 @@ int verificarTarefaExistente(Fila* fila, char* descricao) {
     Tarefa* atual = fila->frente;
     while (atual != NULL) {
         if (strcmp(atual->descricao, descricao) == 0) {
-            return 1; // Tarefa já existe
+            return 1;
         }
         atual = atual->proximo;
     }
-    return 0; // Tarefa não existe
+    return 0;
 }
 
 void adicionarTarefaFila(Fila* fila, char* descricao, int tempoEstimado) {
     if (verificarTarefaExistente(fila, descricao)) {
-        printf("Tarefa já existente! Não foi adicionada.\n");
+        printf(RED "Tarefa já existente! Não foi adicionada.\n" RESET);
         return;
     }
 
@@ -65,55 +74,34 @@ void adicionarTarefaFila(Fila* fila, char* descricao, int tempoEstimado) {
         fila->traseira->proximo = novaTarefa;
         fila->traseira = novaTarefa;
     }
-}
 
-void lerTarefas(Fila* fila) {
-    char descricao[100];
-    int tempoEstimado;
-    char continuar;
-
-    do {
-        printf("Digite a descrição da tarefa: ");
-        fgets(descricao, sizeof(descricao), stdin);
-        descricao[strcspn(descricao, "\n")] = '\0'; // Remover o newline
-
-        printf("Digite o tempo estimado dedicado à tarefa (em minutos): ");
-        scanf("%d", &tempoEstimado);
-        getchar(); // Limpar o buffer
-
-        adicionarTarefaFila(fila, descricao, tempoEstimado);
-
-        printf("Deseja adicionar outra tarefa? (s/n): ");
-        scanf(" %c", &continuar);
-        getchar(); // Limpar o buffer
-    } while (continuar == 's' || continuar == 'S');
+    printf(GREEN "Tarefa adicionada com sucesso!\n" RESET);
 }
 
 void exibirTarefas(Fila* fila) {
     Tarefa* atual = fila->frente;
     if (atual == NULL) {
-        printf("Nenhuma tarefa pendente.\n");
+        printf(RED "Nenhuma tarefa pendente.\n" RESET);
         return;
     }
 
-    printf("------------------------------------------------------------\n");
-    printf("| Nº | Descrição                  | XP    | Tempo Estimado | Tempo Real      |\n");
-    printf("------------------------------------------------------------\n");
+    printf(YELLOW "------------------------------------------------------------\n" RESET);
+    printf(BLUE "| Nº | Descrição                  | XP    | Tempo Estimado | Tempo Real      |\n" RESET);
+    printf(YELLOW "------------------------------------------------------------\n" RESET);
     int i = 1;
     while (atual != NULL) {
         printf("| %-2d | %-25s | %-5d | %-13d | %-13d |\n", i++, atual->descricao, atual->xp, atual->tempoEstimado, atual->tempoReal);
         atual = atual->proximo;
     }
-    printf("------------------------------------------------------------\n");
+    printf(YELLOW "------------------------------------------------------------\n" RESET);
 }
 
 void concluirTarefa(Fila* fila, ListaConcluidas* concluidas, int* xpTotal) {
     if (fila->frente == NULL) {
-        printf("Nenhuma tarefa para concluir.\n");
+        printf(RED "Nenhuma tarefa para concluir.\n" RESET);
         return;
     }
 
-    // Exibir tarefas com numeração
     exibirTarefas(fila);
 
     int numero;
@@ -128,12 +116,12 @@ void concluirTarefa(Fila* fila, ListaConcluidas* concluidas, int* xpTotal) {
     }
 
     if (atual == NULL) {
-        printf("Tarefa inválida.\n");
+        printf(RED "Tarefa inválida.\n" RESET);
         return;
     }
 
-    char resposta;
     printf("Concluiu o tempo estimado? (s/n): ");
+    char resposta;
     scanf(" %c", &resposta);
     getchar();
 
@@ -145,10 +133,11 @@ void concluirTarefa(Fila* fila, ListaConcluidas* concluidas, int* xpTotal) {
         getchar();
     }
 
-    atual->xp += atual->tempoReal / 10; // 1 XP a cada 10 minutos
+    mostrarProgresso(5); // Simulação de conclusão da tarefa
+
+    atual->xp += atual->tempoReal / 10;
     *xpTotal += atual->xp;
 
-    // Remover tarefa da fila
     if (anterior == NULL) {
         fila->frente = atual->proximo;
     } else {
@@ -158,64 +147,134 @@ void concluirTarefa(Fila* fila, ListaConcluidas* concluidas, int* xpTotal) {
         fila->traseira = anterior;
     }
 
-    // Adicionar a tarefa concluída na lista de concluídas
     atual->proximo = concluidas->inicio;
     concluidas->inicio = atual;
 
-    printf("Tarefa concluída!\n");
+    printf(GREEN "Tarefa concluída!\n" RESET);
+    mostrarRecompensa(*xpTotal);
 }
 
 void exibirTarefasConcluidas(ListaConcluidas* concluidas) {
     Tarefa* atual = concluidas->inicio;
     if (atual == NULL) {
-        printf("Nenhuma tarefa concluída.\n");
+        printf(RED "Nenhuma tarefa concluída.\n" RESET);
         return;
     }
 
-    printf("------------------------------------------------------------\n");
-    printf("| Descrição                    | XP    | Tempo Estimado  | Tempo Real      |\n");
-    printf("------------------------------------------------------------\n");
+    printf(YELLOW "------------------------------------------------------------\n" RESET);
+    printf(BLUE "| Descrição                    | XP    | Tempo Estimado  | Tempo Real      |\n" RESET);
+    printf(YELLOW "------------------------------------------------------------\n" RESET);
     while (atual != NULL) {
         printf("| %-25s | %-5d | %-13d | %-13d |\n", atual->descricao, atual->xp, atual->tempoEstimado, atual->tempoReal);
         atual = atual->proximo;
     }
-    printf("------------------------------------------------------------\n");
+    printf(YELLOW "------------------------------------------------------------\n" RESET);
+}
+
+void mostrarProgresso(int tempo) {
+    printf(CYAN "Concluindo tarefa...\n" RESET);
+    for (int i = 0; i <= 100; i += 10) {
+        printf("\rProgresso: [%-10s] %d%%", "##########" + 10 - (i / 10), i);
+        fflush(stdout);
+        Sleep(tempo * 10);
+    }
+    printf("\n");
+}
+
+void mostrarRecompensa(int xpTotal) {
+    if (xpTotal >= 10 && xpTotal < 50) {
+        printf(YELLOW "Parabéns! Você alcançou o nível Bronze! 🥉\n" RESET);
+    } else if (xpTotal >= 50 && xpTotal < 100) {
+        printf(GREEN "Incrível! Você alcançou o nível Prata! 🥈\n" RESET);
+    } else if (xpTotal >= 100) {
+        printf(CYAN "Fantástico! Você alcançou o nível Ouro! 🥇\n" RESET);
+    }
+}
+
+void exibirXP(int xpTotal) {
+    printf(GREEN "XP Total: " RESET);
+    for (int i = 0; i < xpTotal / 10; i++) {
+        printf("■");
+    }
+    printf(" %d XP\n", xpTotal);
+}
+
+void animacaoInicial() {
+    printf(YELLOW "Carregando" RESET);
+    for (int i = 0; i < 3; i++) {
+        printf(".");
+        fflush(stdout);
+        Sleep(500);
+    }
+    printf(GREEN "\nBem-vindo ao Gerenciador de Tarefas XP!\n" RESET);
+}
+
+void exibirMenu() {
+    printf("\n");
+    printf(YELLOW "==========================================" RESET "\n");
+    printf(GREEN " Bem-vindo ao Gerenciador de Tarefas XP! " RESET "\n");
+    printf(YELLOW "==========================================" RESET "\n");
+    printf("1. Adicionar Tarefa\n");
+    printf("2. Exibir Tarefas\n");
+    printf("3. Marcar Tarefa como Concluída\n");
+    printf("4. Ver Tarefas Concluídas\n");
+    printf("5. Ver XP Total\n");
+    printf("6. Sair\n");
+    printf("Escolha uma opção: ");
+    printf("\n");
 }
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
-
     Fila* tarefasPendentes = criarFila();
     ListaConcluidas* tarefasConcluidas = criarListaConcluidas();
     int xpTotal = 0;
 
+    animacaoInicial();
+
     int opcao;
     do {
-        printf("\n1. Adicionar Tarefa\n2. Exibir Tarefas\n3. Marcar Tarefa como Concluída\n4. Ver Tarefas Concluídas\n5. Ver XP Total\n6. Sair\nEscolha uma opção: ");
+        exibirMenu();
         scanf("%d", &opcao);
-        getchar(); // Limpar o buffer
+        getchar();
 
         switch (opcao) {
             case 1:
-                lerTarefas(tarefasPendentes);
+                {
+                    char descricao[100];
+                    int tempoEstimado;
+                    printf("Digite a descrição da tarefa: ");
+                    fgets(descricao, sizeof(descricao), stdin);
+                    descricao[strcspn(descricao, "\n")] = '\0';
+                    printf("Digite o tempo estimado (em minutos): ");
+                    scanf("%d", &tempoEstimado);
+                    getchar();
+                    adicionarTarefaFila(tarefasPendentes, descricao, tempoEstimado);
+                }
                 break;
+
             case 2:
                 exibirTarefas(tarefasPendentes);
                 break;
+
             case 3:
                 concluirTarefa(tarefasPendentes, tarefasConcluidas, &xpTotal);
                 break;
+
             case 4:
                 exibirTarefasConcluidas(tarefasConcluidas);
                 break;
+
             case 5:
-                printf("XP Total: %d\n", xpTotal);
+                exibirXP(xpTotal);
                 break;
+
             case 6:
-                printf("Saindo...\n");
+                printf(MAGENTA "Saindo do programa...\n" RESET);
                 break;
+
             default:
-                printf("Opção inválida.\n");
+                printf(RED "Opção inválida. Tente novamente.\n" RESET);
         }
     } while (opcao != 6);
 
