@@ -17,7 +17,7 @@ typedef struct Tarefa {
     char descricao[100];
     int xp;
     int tempoEstimado;
-    int tempoReal;
+    int tempoReal;  
     struct Tarefa* proximo;
 } Tarefa;
 
