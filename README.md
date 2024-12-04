@@ -6,7 +6,11 @@
 
 Este projeto é um gerenciador de tarefas desenvolvido em *C* como parte do trabalho da disciplina *INF0063 - AED1 (Algoritmos e Estruturas de Dados I). O sistema permite que o usuário adicione tarefas, acompanhe o progresso e registre as tarefas concluídas, além de calcular o **XP* ganho ao completar as tarefas. A implementação utiliza estruturas de dados como *fila* e *lista encadeada* para gerenciar as tarefas pendentes e concluídas.
 
-![img](https://amhandmade.pt/cdn/shop/files/IMG_5474.jpg?v=1695566664&width=1445)
+<p align="center">
+  <img src="https://amhandmade.pt/cdn/shop/files/IMG_5474.jpg?v=1695566664&width=1445" alt="img" width="300">
+</p>
+
+
 
 ---
 
@@ -14,59 +18,81 @@ Este projeto é um gerenciador de tarefas desenvolvido em *C* como parte do trab
 
 ### Estruturas de Dados Utilizadas
 
-   - Fila de Tarefas Pendentes (Queue):
-      * A fila é utilizada para armazenar as tarefas que ainda não foram concluídas, seguindo o conceito de FIFO (First In, First Out). Novas tarefas são adicionadas ao final da fila, e a conclusão remove tarefas do início.
-      * Implementação: Cada tarefa é representada como um nó da estrutura, com ponteiros que conectam os nós consecutivamente.
+- **Fila de Tarefas Pendentes (Queue):**
+  - Utilizada para gerenciar as tarefas não concluídas, seguindo o conceito FIFO (*First In, First Out*).
+  - **Descrição:** Novas tarefas são adicionadas ao final da fila, enquanto as tarefas concluídas são removidas do início.
+  - **Implementação:** Cada tarefa é representada como um nó conectado sequencialmente por ponteiros.
 
-   - Lista de Tarefas Concluídas:
-      * A lista ligada é usada para armazenar tarefas já concluídas, com inserção de novas tarefas no início da lista (ordem LIFO - Last In, First Out). Cada nó aponta para o próximo elemento na lista.
+- **Lista de Tarefas Concluídas:**
+  - Estrutura de dados do tipo lista ligada para armazenar as tarefas finalizadas, em ordem LIFO (*Last In, First Out*).
+  - **Descrição:** Novas tarefas concluídas são inseridas no início da lista.
+  - **Implementação:** Cada nó aponta para o próximo elemento, formando uma sequência encadeada.
 
+---
 ### Mecanismos e Algoritmos
 
-   - Adição de Tarefas à Fila:
-      * O método adicionarTarefaFila verifica se a tarefa já existe (para evitar duplicatas) usando o algoritmo de busca linear, comparando a descrição da nova tarefa com as existentes.
-      * Caso a tarefa seja única, ela é alocada dinamicamente e inserida na fila.
+- **Adição de Tarefas à Fila:**
+  - O método `adicionarTarefaFila` realiza uma busca linear para evitar duplicatas antes de inserir a nova tarefa:
+    1. Verifica se a descrição da tarefa já existe na fila.
+    2. Caso seja única, aloca a tarefa dinamicamente e a insere na estrutura.
 
-   - Exibição das Tarefas:
-      * As funções exibirTarefas e exibirTarefasConcluidas iteram pelas estruturas de dados e formatam os dados das tarefas em uma tabela organizada.
-      * Esse recurso melhora a visualização, fundamental para monitorar progresso.
+- **Exibição das Tarefas:**
+  - As funções `exibirTarefas` e `exibirTarefasConcluidas` iteram pelas estruturas de dados e exibem as tarefas em formato de tabela para melhor visualização.
 
-   - Conclusão de Tarefas:
-      * O método concluirTarefa permite ao usuário selecionar uma tarefa por meio de um índice, com base na listagem atual.
-      * Após a conclusão:
-         * Atualiza-se o tempo real dedicado à tarefa.
-         * O sistema calcula o XP ganho (1 XP para cada 10 minutos de trabalho).
-         * A tarefa é removida da fila e inserida na lista de tarefas concluídas.
+- **Conclusão de Tarefas:**
+  - O método `concluirTarefa` permite ao usuário selecionar uma tarefa por índice.
+    - Após a conclusão:
+      - Atualiza o tempo dedicado à tarefa.
+      - Calcula o XP ganho (1 XP a cada 10 minutos de trabalho).
+      - Move a tarefa da fila para a lista de tarefas concluídas.
 
-   - XP Total:
-      * O cálculo do XP total acumulado considera as tarefas concluídas e é armazenado em uma variável global compartilhada.
+- **XP Total:**
+  - Calculado com base nas tarefas concluídas e armazenado em uma variável global.
 
-   - Gerenciamento de Memória:
-      * O código utiliza funções como malloc e free para gerenciar a memória dinamicamente. Isso permite a criação e remoção de tarefas sem desperdício de memória.
+- **Gerenciamento de Memória:**
+  - Uso de funções como `malloc` e `free` para gerenciamento dinâmico da memória, permitindo a criação e remoção de tarefas sem desperdício de recursos.
 
+---
 ### Avaliação da Solução
-A avaliação do sistema pode ser feita com base nas seguintes métricas:
-   - Funcionalidade:
-      * Verificar se as operações básicas (adicionar, concluir e exibir tarefas) funcionam conforme esperado.
-      * Testar cenários de erro, como inserção de tarefas duplicadas ou escolha de tarefas inexistentes.
-   - Desempenho:
-      * Avaliar a eficiência dos algoritmos usados para manipulação de tarefas, especialmente a busca linear para verificar duplicatas e o gerenciamento da fila.
-      * Considerar o tempo de execução em cenários com muitas tarefas.
-   - Utilização de Recursos:
-      * Garantir que a memória alocada é liberada adequadamente para evitar memory leaks.
-      * Analisar o consumo de memória com ferramentas específicas.
-   - Usabilidade:
-      * Testar a interface com o usuário, validando se as mensagens e fluxos são claros.
-      * Observar a facilidade de navegação entre as opções do menu.
-   - Escalabilidade:
-      * Medir o comportamento do sistema com volumes crescentes de tarefas pendentes e concluídas.
 
+A solução pode ser avaliada com base nos seguintes critérios:
+
+- **Funcionalidade:**
+  - Verificar se as operações de adicionar, concluir e exibir tarefas funcionam corretamente.
+  - Testar cenários de erro, como tarefas duplicadas ou seleção inválida.
+
+- **Desempenho:**
+  - Avaliar a eficiência da busca linear ao evitar duplicatas.
+  - Medir o tempo de execução em cenários com muitas tarefas.
+
+- **Utilização de Recursos:**
+  - Garantir que a memória alocada seja liberada adequadamente para evitar *memory leaks*.
+  - Monitorar o consumo de memória.
+
+- **Usabilidade:**
+  - Validar a clareza das mensagens e a navegação no menu.
+  - Testar a facilidade de uso do sistema.
+
+- **Escalabilidade:**
+  - Medir o comportamento com volumes crescentes de tarefas pendentes e concluídas.
+
+---
 ### Forma de Avaliação
-Para validar e melhorar a solução, podem ser aplicadas as seguintes estratégias:
-   - *Testes unitários: Validar individualmente cada função (e.g., *adicionarTarefaFila, concluirTarefa).
-   - *Cenários de uso reais*: Simular casos típicos e extremos de uso, como adicionar uma grande quantidade de tarefas.
-   - *Ferramentas de monitoramento*: Utilizar ferramentas como Valgrind para verificar vazamentos de memória e depurar o uso de ponteiros.
-   - *Feedback de usuários*: Coletar opiniões sobre a experiência e possíveis melhorias.
+
+Para validar e aprimorar a solução, as seguintes estratégias podem ser aplicadas:
+
+- **Testes unitários:**
+  - Validar individualmente funções como `adicionarTarefaFila` e `concluirTarefa`.
+
+- **Cenários de uso reais:**
+  - Simular casos típicos e extremos, como a adição de uma grande quantidade de tarefas.
+
+- **Ferramentas de monitoramento:**
+  - Utilizar ferramentas como Valgrind para verificar vazamentos de memória.
+
+- **Feedback de usuários:**
+  - Coletar opiniões sobre a experiência de uso e possíveis melhorias.
+
 
 ---
 
@@ -74,8 +100,9 @@ Para validar e melhorar a solução, podem ser aplicadas as seguintes estratégi
 
 ### Funcionalidades
 
-![img](https://midias.siteware.com.br/wp-content/uploads/2019/05/25081155/dicas-gestao-projetos.jpg)
-
+<p align="center">
+  <img src="https://midias.siteware.com.br/wp-content/uploads/2019/05/25081155/dicas-gestao-projetos.jpg" alt="img" width="400">
+</p>
 
 - *Adicionar Tarefas:* O usuário pode adicionar tarefas com uma descrição e tempo estimado para a sua execução.
 - *Exibir Tarefas Pendentes:* Lista todas as tarefas ainda não concluídas.
@@ -105,21 +132,28 @@ Para validar e melhorar a solução, podem ser aplicadas as seguintes estratégi
 
 ### Como Compilar e Executar
 
-1. *Compilar o código:*
-   bash
+1. **Compilar o código:**  
+   Execute o seguinte comando no terminal para compilar o programa:  
+   ```bash
    gcc -o Codigo Codigo.c
+
    
 
-2. *Executar o programa:*
-   bash
-   ./Codigo.c
+2. **Executar o programa:**
+Após a compilação, execute o programa com o comando:
+   ```bash
+   ./Codigo
+
    
 
 3. Siga as instruções no menu interativo para adicionar tarefas, concluí-las, verificar tarefas pendentes ou concluídas, e ver o XP total.
 
 ### Exemplo de Saída
 
-
+```plaintext
+==========================================
+ Bem-vindo ao Gerenciador de Tarefas XP!
+==========================================
 1. Adicionar Tarefa
 2. Exibir Tarefas
 3. Marcar Tarefa como Concluída
@@ -128,12 +162,9 @@ Para validar e melhorar a solução, podem ser aplicadas as seguintes estratégi
 6. Sair
 Escolha uma opção: 1
 Digite a descrição da tarefa: Estudar Estruturas de Dados
-Digite o tempo estimado dedicado à tarefa (em minutos): 60
-Deseja adicionar outra tarefa? (s/n): s
-Digite a descrição da tarefa: Revisar Algoritmos
-Digite o tempo estimado dedicado à tarefa (em minutos): 45
-Deseja adicionar outra tarefa? (s/n): n
-
+Digite o tempo estimado (em minutos): 60
+Tarefa adicionada com sucesso!
+```
 
 ## Resultados e Conclusões
 
